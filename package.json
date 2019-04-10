@@ -25,15 +25,11 @@
     "prettier": "node ./scripts/prettier.js",
     "start": "cross-env APP_TYPE=site umi dev",
     "start:no-mock": "cross-env MOCK=none umi dev",
-    "test": "umi test",
-    "test:all": "node ./tests/run-tests.js",
-    "test:component": "umi test ./src/components",
-    "tslint": "npm run tslint:fix",
-    "tslint:fix": "tslint --fix 'src/**/*.ts*'"
+    "proto": "pbjs -t json-module -w commonjs -o src/proto/proto.js  proto/*.proto"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint-staged"
+    
     }
   },
   "lint-staged": {
@@ -52,8 +48,10 @@
   "dependencies": {
     "@antv/data-set": "^0.10.1",
     "antd": "^3.13.0",
+    "axios": "^0.18.0",
     "bizcharts": "^3.4.3",
     "bizcharts-plugin-slider": "^2.1.1-beta.1",
+    "braft-editor": "^2.2.9",
     "classnames": "^2.2.6",
     "dva": "^2.4.1",
     "enquire-js": "^0.2.1",
@@ -69,6 +67,7 @@
     "omit.js": "^1.0.0",
     "path-to-regexp": "^3.0.0",
     "prop-types": "^15.6.2",
+    "protobufjs": "^6.8.8",
     "qs": "^6.6.0",
     "rc-animate": "^2.6.0",
     "react": "^16.7.0",
@@ -78,7 +77,8 @@
     "react-dom": "^16.7.0",
     "react-fittext": "^1.0.0",
     "react-media": "^1.9.2",
-    "umi": "^2.4.4",
+    "react-quill": "^1.3.3",
+    "umi": "^2.6.12",
     "umi-plugin-react": "^1.7.2",
     "umi-request": "^1.0.5"
   },
@@ -88,7 +88,10 @@
     "@types/react-dom": "^16.0.11",
     "antd-pro-merge-less": "^1.0.0",
     "antd-theme-webpack-plugin": "^1.2.0",
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2017": "^6.24.1",
     "chalk": "^2.4.2",
     "check-prettier": "^1.0.1",
     "cross-env": "^5.2.0",
@@ -111,6 +114,7 @@
     "merge-umi-mock-data": "^1.0.4",
     "mockjs": "^1.0.1-beta3",
     "prettier": "^1.16.4",
+    "serverless-http": "^1.9.1",
     "slash2": "^2.0.0",
     "stylelint": "^9.10.1",
     "stylelint-config-css-modules": "^1.3.0",
@@ -122,8 +126,7 @@
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.17.0",
     "tslint-react": "^3.6.0",
-    "umi-plugin-ga": "^1.1.3",
-    "serverless-http": "^1.9.1"
+    "umi-plugin-ga": "^1.1.3"
   },
   "optionalDependencies": {
     "puppeteer": "^1.12.1"

@@ -42,4 +42,13 @@ export default {
   'menu.editor.flow': '流程编辑器',
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
+  'menu.problem': '题目管理',
+  'menu.problem.list': '题目列表',
+  'menu.problem.edit': '创建题目',
+  'menu.contest': '比赛管理',
+  'menu.contest.list': '比赛列表',
+  'menu.contest.edit': '创建比赛',
+  'menu.class': '班级管理',
+  'menu.class.list': '班级列表',
+  'menu.class.edit': '加入班级请求',
 };

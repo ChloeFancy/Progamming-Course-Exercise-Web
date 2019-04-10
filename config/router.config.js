@@ -291,6 +291,57 @@ export default [
         ],
       },
       {
+        name: 'problem',
+        icon: 'highlight',
+        path: '/problem',
+        routes: [
+          {
+            path: '/problem/list',
+            name: 'list',
+            component: './Problem/List',
+          },
+          {
+            path: '/problem/edit',
+            name: 'edit',
+            component: './Problem/Edit',
+          },
+        ],
+      },
+      {
+        name: 'contest',
+        icon: 'highlight',
+        path: '/contest',
+        routes: [
+          {
+            path: '/contest/list',
+            name: 'list',
+            component: './Contest/List',
+          },
+          {
+            path: '/contest/edit',
+            name: 'edit',
+            component: './Contest/Edit',
+          },
+        ],
+      },
+      {
+        name: 'class',
+        icon: 'highlight',
+        path: '/class',
+        routes: [
+          {
+            path: '/class/list',
+            name: 'list',
+            component: './Class/List',
+          },
+          {
+            path: '/class/edit',
+            name: 'edit',
+            component: './Class/Edit',
+          },
+        ],
+      },
+      {
         component: '404',
       },
     ],
