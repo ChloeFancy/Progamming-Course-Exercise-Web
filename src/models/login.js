@@ -17,6 +17,14 @@ export default {
     *login({ payload }, { call, put }) {
       const { token } = yield call(login, payload);
       document.cookie = `token=${token}`;
+      put({
+        type: 'changeLoginStatus',
+        payload: {
+          status: 'ok',
+          type: '',
+          currentAuthority: 'admin',
+        },
+      });
 
       reloadAuthorized();
       const urlParams = new URL(window.location.href);
