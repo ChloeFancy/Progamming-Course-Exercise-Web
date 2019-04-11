@@ -15,9 +15,10 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
+      // todo 登陆失败如何处理？？？
       const { token } = yield call(login, payload);
       document.cookie = `token=${token}`;
-      put({
+      yield put({
         type: 'changeLoginStatus',
         payload: {
           status: 'ok',

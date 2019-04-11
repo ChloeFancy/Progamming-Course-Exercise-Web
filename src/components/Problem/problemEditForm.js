@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Table, Icon, Upload, Button, Form, Input, Row, Col, Select, Checkbox } from 'antd';
-import BraftEditor from 'braft-editor';
-import 'braft-editor/dist/index.css';
+import BraftEditor from '../common/BraftEditor';
 
 import styles from './problemEditForm.less';
 
@@ -46,10 +45,7 @@ class ProblemEditForm extends PureComponent {
         </Row>
         <Row>
           <FormItem label={getLabel('题目描述')}>
-            <BraftEditor
-              className={styles['braft-editor']}
-              contentClassName={styles['bf-content']}
-            />
+            <BraftEditor />
           </FormItem>
         </Row>
         <Row {...RowConfig}>
@@ -184,10 +180,7 @@ class ProblemEditForm extends PureComponent {
         </Row>
         <Row>
           <FormItem label={getLabel('提示')}>
-            <BraftEditor
-              className={styles['braft-editor']}
-              contentClassName={styles['bf-content']}
-            />
+            <BraftEditor />
           </FormItem>
         </Row>
         <Row>

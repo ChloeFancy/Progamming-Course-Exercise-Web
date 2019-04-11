@@ -305,6 +305,11 @@ export default [
             name: 'user-add',
             component: './manage/UserAdd',
           },
+          {
+            path: '/manage/announce',
+            name: 'announce',
+            component: './manage/AnnounceList',
+          },
         ],
       },
       {
