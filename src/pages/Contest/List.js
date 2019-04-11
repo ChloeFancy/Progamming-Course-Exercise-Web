@@ -1,192 +1,227 @@
-import React, { PureComponent } from 'react';
-import numeral from 'numeral';
+
+import React, { Component } from 'react';
 import { connect } from 'dva';
-import { FormattedMessage } from 'umi-plugin-react/locale';
-import { Row, Col, Form, Card, Select, Icon, Avatar, List, Tooltip, Dropdown, Menu } from 'antd';
-import TagSelect from '@/components/TagSelect';
-import StandardFormRow from '@/components/StandardFormRow';
+import { Table, Modal, Form, Input, message, Button, Row, Col, Popconfirm } from 'antd';
+import AnnounceEditForm from '../../components/Manage/AnnounceEditForm';
+import { getUserInfoByID, submitUserInfo, getUserInfoByKeyword } from '../../services/userList';
+import config from '../../configs/contest';
 
-import { formatWan } from '@/utils/utils';
-
-import styles from './Applications.less';
-
-const { Option } = Select;
 const FormItem = Form.Item;
 
-@connect(({ list, loading }) => ({
-  list,
-  loading: loading.models.list,
-}))
-@Form.create({
-  onValuesChange({ dispatch }, changedValues, allValues) {
-    // 表单项变化时请求数据
-    // eslint-disable-next-line
-    console.log(changedValues, allValues);
-    // 模拟查询表单生效
-    dispatch({
-      type: 'list/fetch',
-      payload: {
-        count: 8,
-      },
-    });
+const getColumns = (onEdit, onDetail) => {
+    return [
+        {
+            title: 'ID',
+            dataIndex: config.id,
+            key: config.id,
+        },
+        {
+            title: '名称',
+            dataIndex: config.name,
+            key: config.name,
+            width: '20%',
+        },
+        {
+            title: '时长',
+            dataIndex: config.duration,
+            key: config.duration,
+            width: '15%',
+        },
+        {
+            title: '开始时间',
+            dataIndex: config.startTime,
+            key: config.startTime,
+            width: '15%',
+        }, 
+        {
+          title: '是否公开',
+          dataIndex: config.isPublic,
+          key: config.isPublic,
+          render: (text) => text ? '公开' : '非公开',
+        },
+        {
+          title: '是否结束',
+          dataIndex: config.isOver,
+          key: config.isOver,
+          render: (text) => text ? '进行中' : '已结束',
+        },
+        {
+            title: '管理',
+            dataIndex: 'action',
+            key: 'action',
+            width: '20%',
+            render: (text, record) => {
+                return (
+                    <div>
+                        <Button type="primary" onClick={onEdit(record)}>编辑</Button>
+                        &nbsp;
+                        <Button type="primary" onClick={onDetail(record)}>题目</Button>
+                    </div>
+                );
+            },
+        },
+    ];
+};
+
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
   },
-})
-class FilterCardList extends PureComponent {
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'list/fetch',
-      payload: {
-        count: 8,
-      },
-    });
-  }
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
 
-  render() {
-    const {
-      list: { list },
-      loading,
-      form,
-    } = this.props;
-    const { getFieldDecorator } = form;
+@connect(({ contestList }) => ({
+    ...contestList,
+}))
+export default class ContestList extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            pageIndex: 1,
+            pageSize: 10,
+            keyword: '',
+        };
+    }
 
-    const CardInfo = ({ activeUser, newUser }) => (
-      <div className={styles.cardInfo}>
-        <div>
-          <p>活跃用户</p>
-          <p>{activeUser}</p>
-        </div>
-        <div>
-          <p>新增用户</p>
-          <p>{newUser}</p>
-        </div>
-      </div>
-    );
+    async componentDidMount() {
+        this.fetchList();
+    }
 
-    const formItemLayout = {
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-      },
+    onEdit = (record) => {
+        return async() => {
+            const {
+                id,
+            } = record;
+
+            const { dispatch } = this.props;
+            await dispatch({
+                type: 'announce/onEdit',
+                payload: {
+                    id,
+                },
+            });
+        };
     };
 
-    const actionsTextMap = {
-      expandText: <FormattedMessage id="component.tagSelect.expand" defaultMessage="Expand" />,
-      collapseText: (
-        <FormattedMessage id="component.tagSelect.collapse" defaultMessage="Collapse" />
-      ),
-      selectAllText: <FormattedMessage id="component.tagSelect.all" defaultMessage="All" />,
+    onDetail = (record) => {
+      // 跳转到详情页
     };
 
-    const itemMenu = (
-      <Menu>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="https://www.alipay.com/">
-            1st menu item
-          </a>
-        </Menu.Item>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="https://www.taobao.com/">
-            2nd menu item
-          </a>
-        </Menu.Item>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="https://www.tmall.com/">
-            3d menu item
-          </a>
-        </Menu.Item>
-      </Menu>
-    );
+    fetchList = async(data = {}) => {
+        const { pageIndex, pageSize } = this.state;
+        const { dispatch } = this.props;
+        await dispatch({
+            type: 'contestList/fetchList',
+            payload: {
+                pageIndex,
+                pageSize,
+                ...data,
+            },
+        });
+    };
 
-    return (
-      <div className={styles.filterCardList}>
-        <Card bordered={false}>
-          <Form layout="inline">
-            <StandardFormRow title="所属类目" block style={{ paddingBottom: 11 }}>
-              <FormItem>
-                {getFieldDecorator('category')(
-                  <TagSelect expandable actionsText={actionsTextMap}>
-                    <TagSelect.Option value="cat1">类目一</TagSelect.Option>
-                    <TagSelect.Option value="cat2">类目二</TagSelect.Option>
-                    <TagSelect.Option value="cat3">类目三</TagSelect.Option>
-                    <TagSelect.Option value="cat4">类目四</TagSelect.Option>
-                    <TagSelect.Option value="cat5">类目五</TagSelect.Option>
-                    <TagSelect.Option value="cat6">类目六</TagSelect.Option>
-                    <TagSelect.Option value="cat7">类目七</TagSelect.Option>
-                    <TagSelect.Option value="cat8">类目八</TagSelect.Option>
-                    <TagSelect.Option value="cat9">类目九</TagSelect.Option>
-                    <TagSelect.Option value="cat10">类目十</TagSelect.Option>
-                    <TagSelect.Option value="cat11">类目十一</TagSelect.Option>
-                    <TagSelect.Option value="cat12">类目十二</TagSelect.Option>
-                  </TagSelect>
-                )}
-              </FormItem>
-            </StandardFormRow>
-            <StandardFormRow title="其它选项" grid last>
-              <Row gutter={16}>
-                <Col lg={8} md={10} sm={10} xs={24}>
-                  <FormItem {...formItemLayout} label="作者">
-                    {getFieldDecorator('author', {})(
-                      <Select placeholder="不限" style={{ maxWidth: 200, width: '100%' }}>
-                        <Option value="lisa">王昭君</Option>
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
-                <Col lg={8} md={10} sm={10} xs={24}>
-                  <FormItem {...formItemLayout} label="好评度">
-                    {getFieldDecorator('rate', {})(
-                      <Select placeholder="不限" style={{ maxWidth: 200, width: '100%' }}>
-                        <Option value="good">优秀</Option>
-                        <Option value="normal">普通</Option>
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-            </StandardFormRow>
-          </Form>
-        </Card>
-        <List
-          rowKey="id"
-          style={{ marginTop: 24 }}
-          grid={{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }}
-          loading={loading}
-          dataSource={list}
-          renderItem={item => (
-            <List.Item key={item.id}>
-              <Card
-                hoverable
-                bodyStyle={{ paddingBottom: 20 }}
-                actions={[
-                  <Tooltip title="下载">
-                    <Icon type="download" />
-                  </Tooltip>,
-                  <Tooltip title="编辑">
-                    <Icon type="edit" />
-                  </Tooltip>,
-                  <Tooltip title="分享">
-                    <Icon type="share-alt" />
-                  </Tooltip>,
-                  <Dropdown overlay={itemMenu}>
-                    <Icon type="ellipsis" />
-                  </Dropdown>,
-                ]}
-              >
-                <Card.Meta avatar={<Avatar size="small" src={item.avatar} />} title={item.title} />
-                <div className={styles.cardItemContent}>
-                  <CardInfo
-                    activeUser={formatWan(item.activeUser)}
-                    newUser={numeral(item.newUser).format('0,0')}
-                  />
-                </div>
-              </Card>
-            </List.Item>
-          )}
-        />
-      </div>
-    );
-  }
+    handleSearch = async() => {
+        const {
+            keyowrd,
+        } = this.state;
+        this.fetchList({ keyowrd });
+    };
+
+    handleOk = () => {
+        this.formRef.handleSubmit();
+    };
+
+    handleCancel = async() => {
+        const {
+            editingInfo,
+            operation,
+            dispatch,
+        } = this.props;
+        await dispatch({
+            type: 'announce/onCancel',
+        });
+    };
+
+    handleInputChange = (ev) => {
+        this.setState({
+            keyword: ev.target.value,
+        });
+    };
+
+    render() {
+        const {
+            total,
+            list: dataSource,
+            loadingList,
+        } = this.props;
+
+        const {
+            pageIndex,
+            pageSize,
+            keyword,
+        } = this.state;
+
+        return (
+            <div>
+              <Form>
+                <Row type="flex" justify="end">
+                  <Col span={10}>
+                    <FormItem label="关键词" {...formItemLayout}>
+                      <Input
+                        value={keyword}     
+                        onChange={this.handleKeywordChange}
+                        placeholder="请输入关键词"
+                      />
+                    </FormItem>
+                  </Col>
+
+                  <Col>
+                    <Button type="primary" onClick={this.handleSearch}>
+                      搜索
+                    </Button>
+                  </Col>
+                  
+                </Row>
+                </Form>
+                <Table
+                    dataSource={dataSource}
+                    columns={getColumns(this.onEdit, this.onDetail)}
+                    rowKey="ID"
+                    loading={loadingList}
+                    pagination={{
+                        total,
+                        pageSize,
+                        current: pageIndex,
+                        showSizeChanger: true,
+                        showTotal: (t) => `共 ${t} 条`,
+                        onShowSizeChange: (current, size) => {
+                            this.setState(
+                                {
+                                    pageIndex: current,
+                                    pageSize: size,
+                                },
+                                () => {
+                                    this.fetchList();
+                                },
+                            );
+                        },
+                        onChange: (current) => {
+                            this.setState(
+                                {
+                                    pageIndex: current,
+                                },
+                                () => {
+                                    this.fetchList();
+                                },
+                            );
+                        },
+                    }}
+                />
+            </div>
+        );
+    }
 }
-
-export default FilterCardList;
