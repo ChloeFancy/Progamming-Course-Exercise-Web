@@ -291,6 +291,23 @@ export default [
         ],
       },
       {
+        name: 'manage',
+        icon: 'highlight',
+        path: '/manage',
+        routes: [
+          {
+            path: '/manage/user',
+            name: 'user',
+            component: './manage/UserList',
+          },
+          {
+            path: '/manage/user-add',
+            name: 'user-add',
+            component: './manage/UserAdd',
+          },
+        ],
+      },
+      {
         name: 'problem',
         icon: 'highlight',
         path: '/problem',
@@ -338,6 +355,19 @@ export default [
             path: '/class/edit',
             name: 'edit',
             component: './Class/Edit',
+          },
+        ],
+      },
+      // hideInMenu: true,
+      {
+        name: 'student', // 学生相关页面
+        icon: 'highlight',
+        path: '/student',
+        routes: [
+          {
+            path: '/student/problem/detail',
+            name: 'problem-detail',
+            component: './Student/Problem/Detail',
           },
         ],
       },
